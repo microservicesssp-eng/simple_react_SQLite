@@ -1,0 +1,85 @@
+Учебный проект: React + Spring Boot + SQLite
+============================================
+
+Что делает приложение
+---------------------
+На странице есть короткая форма: имя и сообщение. После нажатия кнопки
+браузер отправляет JSON в Spring Boot. Backend проверяет поля и записывает
+сообщение в локальный файл SQLite. Сохранённые записи загружаются обратно
+и показываются на странице.
+
+Путь данных:
+HTML input -> React state -> fetch(JSON) -> REST API -> JPA repository -> SQLite
+
+Части проекта
+-------------
+frontend/                     Страница на React и настройки Vite
+  src/main.jsx                Форма, запросы к API и список сообщений
+  src/style.css               Небольшие базовые стили
+  vite.config.js              Перенаправляет /api с frontend на backend
+backend/                      Приложение Spring Boot на Java
+  src/main/java/demo/         Запуск приложения и API гостевой книги
+  src/main/resources/         Настройки Spring и подключения к SQLite
+  data/greetings.db           Файл базы данных, создаётся при первом запуске
+
+Что понадобится
+---------------
+- Java 17 или новее
+- Maven
+- Node.js и npm
+
+Как запустить
+-------------
+1. Откройте первый терминал и запустите backend:
+
+   cd /home/karim/react_ex/simple_react_SQLite/backend
+   mvn spring-boot:run
+
+   Backend работает на http://localhost:8080. При первом запуске он создаст
+   таблицу в backend/data/greetings.db. Остановить: Ctrl+C.
+
+2. Откройте второй терминал и запустите frontend:
+
+   cd /home/karim/react_ex/simple_react_SQLite/frontend
+   npm install
+   npm run dev
+
+3. Откройте адрес, который напечатает Vite (обычно http://localhost:5173).
+   Для отправки формы оба приложения должны быть запущены.
+
+Как собрать
+-----------
+Frontend:
+   cd /home/karim/react_ex/simple_react_SQLite/frontend
+   npm run build
+
+Backend:
+   cd /home/karim/react_ex/simple_react_SQLite/backend
+   mvn clean package
+
+Сборка React создаёт frontend/dist. Maven создаёт backend/target.
+Эти папки не нужны для чтения исходного кода и перечислены в .gitignore.
+
+Полезно для изучения
+--------------------
+- В frontend/src/main.jsx обработчик формы сохраняет введённые значения
+  в React state, а submit отправляет их методом POST.
+- Vite перенаправляет адрес /api на Spring Boot. Поэтому в браузере можно
+  использовать один адрес API и не настраивать CORS.
+- GreetingController принимает POST /api/greetings и отдаёт список на
+  GET /api/greetings.
+- GreetingRepository сохраняет сущность через Spring Data JPA.
+- Настройки SQLite находятся в backend/src/main/resources/application.properties.
+- Файл backend/data/greetings.db содержит сохранённые данные. Удаление этого
+  файла удалит учебные записи; перед удалением сделайте копию, если они нужны.
+
+Размер на диске
+---------------
+Размер меняется после установки npm-пакетов, сборки и добавления записей
+в базу. Чтобы измерить текущий полный размер проекта из его корня:
+
+   du -sh .
+
+Исходный код без загруженных пакетов и результатов сборки занимает примерно
+несколько десятков килобайт. Папки frontend/node_modules и backend/target
+могут занимать десятки или сотни мегабайт и создаются командами выше.
